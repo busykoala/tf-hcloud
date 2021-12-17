@@ -1,8 +1,16 @@
 # Hetzner Cloud with Terraform
 
-- [Documentation](https://registry.terraform.io/providers/hetznercloud/hcloud/latest/docs)
+## Getting ready
 
-## Env variables
+```bash
+cp terraform.tfvars.sample terraform.tfvars
 
-As a fallback the env will be searched for any missing vars starting
-with `TF_VAR_` followed by the variable name.
+# add your hetzner token in terraform.tfvars
+# check if ssh_public_key_path in variables.tf is correct
+
+terraform init
+terraform plan
+terraform apply
+
+terraform destroy
+```
