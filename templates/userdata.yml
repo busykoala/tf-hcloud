@@ -13,8 +13,6 @@ packages:
   - fail2ban
   - ufw
 runcmd:
-  - systemctl enable nginx
-  - ufw allow 'Nginx HTTP'
   - printf "[sshd]\nenabled = true\nbanaction = iptables-multiport" > /etc/fail2ban/jail.local
   - systemctl enable fail2ban
   - systemctl start fail2ban
@@ -29,5 +27,4 @@ runcmd:
   - sed -ie '/^#AuthorizedKeysFile/s/^.*$/AuthorizedKeysFile .ssh/authorized_keys/' /etc/ssh/sshd_config
   - sed -i '$a AllowUsers devops' /etc/ssh/sshd_config
   - systemctl restart ssh
-  - rm /var/www/html/*
-  - echo "Hello! I am Nginx @ $(curl -s ipinfo.io/ip)! This record added at $(date -u)." >>/var/www/html/index.html
+  - curl -sfL https://get.k3s.io | K3S_KUBECONFIG_MODE="644" sh -
