@@ -26,14 +26,13 @@ runcmd:
   - sed -i '$a AllowUsers devops' /etc/ssh/sshd_config
   - systemctl restart ssh
   - curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
-  - curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC='--flannel-backend=none --disable-network-policy --disable traefik' sh -
+  - curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC='--flannel-backend=none --disable-network-policy --disable traefik --disable metrics-server' sh -
   - curl -L --fail --remote-name-all https://github.com/cilium/cilium-cli/releases/download/v0.15.18/cilium-linux-amd64.tar.gz
   - sudo tar xzvfC cilium-linux-amd64.tar.gz /usr/local/bin
   - rm cilium-linux-amd64.tar.gz
-  - export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
-  - cilium install --version 1.14.5
-  - cilium hubble enable
-  - cilium hubble port-forward&
-  - helm repo add open-telemetry https://open-telemetry.github.io/opentelemetry-helm-charts
-  - helm install otel open-telemetry/opentelemetry-operator --set admissionWebhooks.certManager.enabled=false --set admissionWebhooks.certManager.autoGenerateCert.enabled=true
+  - KUBECONFIG=/etc/rancher/k3s/k3s.yaml cilium install --version 1.14.5
+  - KUBECONFIG=/etc/rancher/k3s/k3s.yaml cilium hubble enable
+  - KUBECONFIG=/etc/rancher/k3s/k3s.yaml cilium hubble port-forward&
+  - KUBECONFIG=/etc/rancher/k3s/k3s.yaml helm repo add open-telemetry https://open-telemetry.github.io/opentelemetry-helm-charts
+  - KUBECONFIG=/etc/rancher/k3s/k3s.yaml helm install otel open-telemetry/opentelemetry-operator --set admissionWebhooks.certManager.enabled=false --set admissionWebhooks.certManager.autoGenerateCert.enabled=true
   # apply the collector
