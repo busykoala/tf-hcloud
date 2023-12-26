@@ -14,6 +14,7 @@ runcmd:
   - printf "[sshd]\nenabled = true\nbanaction = iptables-multiport" > /etc/fail2ban/jail.local
   - ufw allow 'OpenSSH'
   - ufw allow 6443
+  - ufw allow 4244
   - ufw enable
   - sed -ie '/^PermitRootLogin/s/^.*$/PermitRootLogin no/' /etc/ssh/sshd_config
   - sed -ie '/^PasswordAuthentication/s/^.*$/PasswordAuthentication no/' /etc/ssh/sshd_config
@@ -24,4 +25,15 @@ runcmd:
   - sed -ie '/^#AuthorizedKeysFile/s/^.*$/AuthorizedKeysFile .ssh/authorized_keys/' /etc/ssh/sshd_config
   - sed -i '$a AllowUsers devops' /etc/ssh/sshd_config
   - systemctl restart ssh
-  - curl -sfL https://get.k3s.io | K3S_KUBECONFIG_MODE="644" INSTALL_K3S_EXEC="server --disable traefik" sh -
+  - curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+  - curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC='--flannel-backend=none --disable-network-policy --disable traefik' sh -
+  - curl -L --fail --remote-name-all https://github.com/cilium/cilium-cli/releases/download/v0.15.18/cilium-linux-amd64.tar.gz
+  - sudo tar xzvfC cilium-linux-amd64.tar.gz /usr/local/bin
+  - rm cilium-linux-amd64.tar.gz
+  - export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+  - cilium install --version 1.14.5
+  - cilium hubble enable
+  - cilium hubble port-forward&
+  - helm repo add open-telemetry https://open-telemetry.github.io/opentelemetry-helm-charts
+  - helm install otel open-telemetry/opentelemetry-operator --set admissionWebhooks.certManager.enabled=false --set admissionWebhooks.certManager.autoGenerateCert.enabled=true
+  # apply the collector
